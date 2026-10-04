@@ -77,6 +77,7 @@ export type PullRequestPrimaryControl =
   | "merge"
   | "enable-auto-merge"
   | "auto-merge-armed"
+  | "queued"
   | "merged"
   | "closed"
   | null;
@@ -85,6 +86,7 @@ export type PullRequestPrimaryControl =
 export function resolvePullRequestPrimaryControl(input: {
   readonly state: PullRequestState;
   readonly isDraft: boolean;
+  readonly inMergeQueue?: boolean | undefined;
   readonly mergeability: PullRequestMergeability;
   readonly checksState: ContractPullRequestChecksState | null;
   readonly autoMergeEnabled: boolean | undefined;
@@ -95,6 +97,8 @@ export function resolvePullRequestPrimaryControl(input: {
 }): PullRequestPrimaryControl {
   if (input.state === "merged") return "merged";
   if (input.state === "closed") return "closed";
+  // The merge is already asked for; the host's queue decides when it lands.
+  if (input.inMergeQueue) return "queued";
   if (input.mergeability === "conflicting") return "resolve";
   if (input.isDraft) return input.canMarkReady ? "ready" : null;
   if (input.autoMergeEnabled) return "auto-merge-armed";

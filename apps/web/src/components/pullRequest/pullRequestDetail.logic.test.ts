@@ -313,6 +313,13 @@ describe("pull request primary control", () => {
     expect(resolvePullRequestPrimaryControl({ ...open, state: "closed" })).toBe("closed");
   });
 
+  it("shows a queued pull request as queued instead of offering to merge it again", () => {
+    expect(resolvePullRequestPrimaryControl({ ...open, inMergeQueue: true })).toBe("queued");
+    expect(resolvePullRequestPrimaryControl({ ...open, state: "merged", inMergeQueue: true })).toBe(
+      "merged",
+    );
+  });
+
   it("keeps conflicts and drafts actionable before merge", () => {
     expect(resolvePullRequestPrimaryControl({ ...open, mergeability: "conflicting" })).toBe(
       "resolve",
