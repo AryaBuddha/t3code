@@ -1646,6 +1646,10 @@ describe("the compact row's single action slot", () => {
     expect(resolveThreadPanelPullRequestAction(openDetail({ checks: [] }))).toBe("merge");
   });
 
+  it("offers nothing for a pull request already in the merge queue", () => {
+    expect(resolveThreadPanelPullRequestAction(openDetail({ inMergeQueue: true }))).toBeNull();
+  });
+
   it("holds the slot while checks run rather than offering a merge that races them", () => {
     expect(
       resolveThreadPanelPullRequestAction(

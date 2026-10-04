@@ -416,9 +416,11 @@ export type ThreadPanelPullRequestAction = "resolve" | "ready" | "fix" | "merge"
  * stays empty — the row shows their progress instead of an action that would race them.
  */
 export function resolveThreadPanelPullRequestAction(
-  detail: (PullRequestActionableDetail & Pick<PullRequestDetail, "checks">) | null,
+  detail: (PullRequestActionableDetail & Pick<PullRequestDetail, "checks" | "inMergeQueue">) | null,
 ): ThreadPanelPullRequestAction | null {
   if (detail === null || detail.state !== "open") return null;
+  // The merge is already asked for; offering it again would only fail on the host.
+  if (detail.inMergeQueue) return null;
   if (isPullRequestConflicting(detail)) return "resolve";
   if (detail.isDraft) {
     return canPerformPullRequestAction(detail, "ready") ? "ready" : null;
